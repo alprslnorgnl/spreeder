@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kelime Gösterme Servisi</title>
+    <style>
+      #kelimelerContainer {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+      #kelimeler {
+        font-size: 50px; /* Font boyutunu istediğiniz değere ayarlayabilirsiniz */
+      }
+      .turuncu-harf {
+        color: orange; /* Orta harfin rengini turuncu olarak ayarlar */
+      }
+    </style>
+    <script>
+      function kelimeGoster() {
+        document.getElementById("baslik").style.display = "none"; // "Kelimeler" başlığının görünürlüğünü kaldır
+        fetch("/kelimeler")
+          .then((response) => response.json())
+          .then((data) => {
+            let index = 0;
+            const interval = setInterval(() => {
+              if (index < data.kelimeler.length) {
+                const kelime = data.kelimeler[index];
+                let ortancaIndis = Math.floor(kelime.length / 2);
+                // Ortanca harfin sınıfını ekleyerek renklendir
+                const renklendirilmisKelime =
+                  kelime.substring(0, ortancaIndis) +
+                  '<span class="turuncu-harf">' +
+                  kelime.charAt(ortancaIndis) +
+                  "</span>" +
+                  kelime.substring(ortancaIndis + 1);
+                document.getElementById("kelimeler").innerHTML =
+                  renklendirilmisKelime;
+                index++;
+              } else {
+                clearInterval(interval);
+              }
+            }, 100); // 1000 milisaniye (1 saniye)
+          });
+
+        document.getElementById("readButton").style.display = "none";
+      }
+    </script>
+  </head>
+  <body>
+    <div id="kelimelerContainer">
+      <h1 id="baslik">Kelimeler</h1>
+      <div id="kelimeler"></div>
+      <button id="readButton" onclick="kelimeGoster()">READ</button>
+    </div>
+  </body>
+</html>
